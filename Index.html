@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hisab Kitab</title>
+<style>
+body{font-family:Arial;background:#f2f5f2;margin:0;padding:18px;color:#173b2c}h1{background:#176b45;color:white;padding:18px;border-radius:12px;text-align:center}input,button{box-sizing:border-box;padding:12px;margin:5px 0;width:100%;border:1px solid #bbb;border-radius:8px;font-size:16px}button{background:#176b45;color:white;border:0;font-weight:bold}.card{background:white;padding:15px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #ddd}.small{font-size:14px;color:#555}</style>
+</head>
+<body>
+<h1>Hisab Kitab</h1>
+<div class="card"><h3>Labour Add Karein</h3><input id="name" placeholder="Labour ka naam"><input id="wage" type="number" placeholder="Roz ki mazdoori ₹"><button onclick="addWorker()">Labour Add Karein</button></div>
+<div class="card"><h3>Aaj ki Hazri / Advance</h3><select id="worker" style="width:100%;padding:12px"></select><input id="days" type="number" step="0.5" placeholder="Hazri (1 ya 0.5)"><input id="advance" type="number" placeholder="Advance ₹"><button onclick="saveEntry()">Hisaab Save Karein</button></div>
+<div class="card"><h3>Labour ka Hisaab</h3><div id="list"></div><p class="small">Note: Ye pehla version isi device ke browser mein data rakhta hai.</p></div>
+<script>
+let workers=JSON.parse(localStorage.getItem("hk_workers")||"[]");
+function persist(){localStorage.setItem("hk_workers",JSON.stringify(workers));render()}
+function addWorker(){let n=document.getElementById("name").value.trim(),w=Number(document.getElementById("wage").value);if(!n||w<=0){alert("Naam aur mazdoori bharein");return}workers.push({n,w,days:0,adv:0});document.getElementById("name").value="";document.getElementById("wage").value="";persist()}
+function saveEntry(){let i=Number(document.getElementById("worker").value),d=Number(document.getElementById("days").value||0),a=Number(document.getElementById("advance").value||0);if(!workers[i]){alert("Pehle labour add karein");return}if(d<0||a<0){alert("Galat value");return}workers[i].days+=d;workers[i].adv+=a;document.getElementById("days").value="";document.getElementById("advance").value="";persist()}
+function render(){let s=document.getElementById("worker"),old=s.value;s.innerHTML="";workers.forEach((x,i)=>s.add(new Option(x.n,i)));if(workers.length)s.value=old;document.getElementById("list").innerHTML=workers.length?workers.map(x=>`<p><b>${x.n.replace(/&/g,"&amp;").replace(/</g,"&lt;")}</b><br>Hazri: ${x.days} | Mazdoori: ₹${x.days*x.w}<br>Advance: ₹${x.adv}<br><b>Baaki: ₹${x.days*x.w-x.adv}</b></p><hr>`).join(""):"Abhi koi labour add nahi hai."}
+render();
+</script>
+</body>
+</html>
